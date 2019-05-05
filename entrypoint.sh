@@ -24,5 +24,5 @@ else
 fi
 
 echo starting Network Function: $NFDOMAIN
-echo nf --https_addr "$NFDOMAIN"":4430"
-nf --https_addr "$NFDOMAIN"":4430"
+echo NFservices --https_addr "$NFDOMAIN"":4430"
+NFservices --https_addr "$NFDOMAIN"":4430"
