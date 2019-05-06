@@ -171,14 +171,14 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	// setup for all connections
 	var root = "https://" + *httpsAddr
 	var ausfroot, udmroot, pcfroot = root, root, root
-	var ausf1 = ausfroot + "/nausf-auth/v1/ue-authentications"
-	var ausf2 = ausfroot + "/nausf-auth/v1/ue-authentications/authctxid0123456789/eap-session"
-	var udm1  =  udmroot + "/nudm-ueau/v1/imsi-012345678901234/registrations/amf-3gpp-access"
-	var udm2  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/am-data"
-	var udm3  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/smf-select-data"
-	var udm4  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/ue-context-in-smf-data"
-	var udm5  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/sdm-subscriptions"
-	var pcf1  =  pcfroot + "/npcf-ue-policy-control/v1/policies"
+	var ausf1 = ausfroot + "/nausf-auth/v1/ue-authentications" // 8
+	var ausf2 = ausfroot + "/nausf-auth/v1/ue-authentications/authctxid0123456789/eap-session" // 21
+	var udm1  =  udmroot + "/nudm-ueau/v1/imsi-012345678901234/registrations/amf-3gpp-access" // 29
+	var udm2  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/am-data" // 32
+	var udm3  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/smf-select-data" // ..
+	var udm4  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/ue-context-in-smf-data" // ..
+	var udm5  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/sdm-subscriptions" // 39a
+	var pcf1  =  pcfroot + "/npcf-ue-policy-control/v1/policies" // 46a
 	fmt.Printf(udmroot,pcfroot)
 	// setup certs
 	t := &http2.Transport{
