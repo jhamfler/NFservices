@@ -24,12 +24,16 @@ import (
 	"golang.org/x/net/http2"
 )
 var (
-	prod = flag.Bool("prod", false, "Whether to configure itself to be the production server in a container.")
+	prod = flag.Bool("prod", false, "Whether to configure itself to be the production server in a container. - do not use yet")
 	httpsAddr = flag.String("https_addr", "localhost:4430", "TLS address to listen on ('host:port' or ':port'). Required.")
 	httpAddr  = flag.String("http_addr", "localhost:8080", "Plain HTTP address to listen on ('host:port', or ':port'). Empty means no HTTP.")
 	hostHTTP  = flag.String("http_host", "", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -http_addr.")
 	hostHTTPS = flag.String("https_host", "", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -https_addr.")
 	certs, err = tls.LoadX509KeyPair("server.crt", "server.key")
+	ausfRoot  = flag.String("ausfRoot", "ausf.default.svc.cluster.local", "address/domain of AUSF")
+	udmRoot   = flag.String("udmRoot" ,  "udm.default.svc.cluster.local", "address/domain of UDM")
+	udrRoot   = flag.String("udrRoot" ,  "udr.default.svc.cluster.local", "address/domain of UDR")
+	pcfRoot   = flag.String("pcfRoot" ,  "pcf.default.svc.cluster.local", "address/domain of PCF")
 )
 
 func main() {
@@ -148,6 +152,7 @@ func registerHandlers() {
 	mux.HandleFunc("/nudm-uecm/v1/", Nudm_UECM_Registration)
 	mux.HandleFunc("/nudm-sdm/v2/", Nudm_SDM_Get)
 	mux.HandleFunc("/npcf-ue-policy-control/v1/policies/", Npcf_UEPolicyControl_Create)
+	mux.HandleFunc("/notifications/", Npcf_UEPolicyControl_UpdateNotify)
 	mux.HandleFunc("/nudr-dr/v2/subscription-data/", Nudr_SubscriptionData)
 	mux.HandleFunc("/nausf-auth/v1/ue-authentications",  Nausf_UEAuthentication_Authenticate_Request1) // 8
 	mux.HandleFunc("/nausf-auth/v1/ue-authentications/", Nausf_UEAuthentication_Authenticate_Request2) // 21
@@ -170,7 +175,10 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	// receive start signal, not representative for a UE, as not measured here
 	// setup for all connections
 	var root = "https://" + *httpsAddr
-	var ausfroot, udmroot, pcfroot = root, root, root
+	var amfroot = root
+	var ausfroot = "https://" + *ausfRoot
+	var udmroot = "https://" + *udmRoot
+	var pcfroot = "https://" + *pcfRoot
 	var ausf1 = ausfroot + "/nausf-auth/v1/ue-authentications" // 8
 	var ausf2 = ausfroot + "/nausf-auth/v1/ue-authentications/authctxid0123456789/eap-session" // 21
 	var udm1  =  udmroot + "/nudm-ueau/v1/imsi-012345678901234/registrations/amf-3gpp-access" // 29
@@ -179,7 +187,6 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	var udm4  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/ue-context-in-smf-data" // ..
 	var udm5  =  udmroot + "/nudm-sdm/v2/imsi-012345678901234/sdm-subscriptions" // 39a
 	var pcf1  =  pcfroot + "/npcf-ue-policy-control/v1/policies" // 46a
-	fmt.Printf(udmroot,pcfroot)
 	// setup certs
 	t := &http2.Transport{
 		TLSClientConfig: &tls.Config{
@@ -273,7 +280,7 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	}
 	{
 		// call PCF 1
-		request, _ := http.NewRequest("POST", pcf1, strings.NewReader(`{"notificationUri": "https://amf.domain.tld/notifications/22222", "supi": "imsi-012345678901234", "suppFeat": "0"}`))
+		request, _ := http.NewRequest("POST", pcf1, strings.NewReader(`{"notificationUri": "` + amfroot + `/notifications/22222", "supi": "imsi-012345678901234", "suppFeat": "0"}`))
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := c.Do(request)
 		// receive
@@ -286,6 +293,11 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	// registration procedure is over
 }
 
+func Npcf_UEPolicyControl_UpdateNotify(w http.ResponseWriter, r *http.Request) {
+	// just send a response, assuming the data was correct
+	// 200 by default
+	// last message, log success here
+}
 func Npcf_UEPolicyControl_Create(w http.ResponseWriter, r *http.Request) {
 	var pcfroot = "https://" + *httpsAddr
 	// receive from amf
@@ -543,7 +555,8 @@ func Nudm_UECM_Registration(w http.ResponseWriter, r *http.Request) {
 func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http.Request) {
 	// receiving POST auth authentication info
 	// {supiOrSuci:"",servingNetworkName:""}
-	var ausfroot = "https://" + *httpsAddr
+	//var ausfroot = "https://" + *httpsAddr
+	var ausfroot = "https://" + *ausfRoot
 	var authctxid = "123456789"
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
