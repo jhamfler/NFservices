@@ -64,6 +64,7 @@ func main() {
 	}
 	go func() {
 		log.Fatal(srv.ListenAndServeTLS("server.crt", "server.key"))
+		log.Printf("exiting")
 	}()
 	select {}
 }
