@@ -104,13 +104,13 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerHandlers() {
-	tiles := newGopherTilesHandler()
+	//tiles := newGopherTilesHandler()
 	push := newPushHandler()
 	mux := http.NewServeMux()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case r.URL.Path == "/gophertiles":
-			tiles.ServeHTTP(w, r) // allow HTTP/2 + HTTP/1.x
+			//tiles.ServeHTTP(w, r) // allow HTTP/2 + HTTP/1.x
 			return
 		case strings.HasPrefix(r.URL.Path, "/serverpush"):
 			push.ServeHTTP(w, r) // allow HTTP/2 + HTTP/1.x
@@ -159,7 +159,7 @@ func registerHandlers() {
 	mux.HandleFunc("/reqinfo", reqInfoHandler)
 	mux.HandleFunc("/ECHO", echoCapitalHandler)
 	mux.HandleFunc("/clockstream", clockStreamHandler)
-	mux.Handle("/gophertiles", tiles)
+	//mux.Handle("/gophertiles", tiles)
 	mux.HandleFunc("/redirect", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusFound)
 	})
