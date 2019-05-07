@@ -25,4 +25,6 @@ fi
 
 echo starting Network Function: $NFDOMAIN
 echo NFservices --https_addr "$NFDOMAIN"":4430"
-NFservices --https_addr "$NFIP"":4430"
+cd /usr/local/bin/
+echo $(pwd)
+./NFservices --https_addr "$NFIP"":4430"
