@@ -25,15 +25,15 @@ import (
 )
 var (
 	prod = flag.Bool("prod", false, "Whether to configure itself to be the production server in a container. - do not use yet")
-	httpsAddr = flag.String("https_addr", "localhost:4430", "TLS address to listen on ('host:port' or ':port'). Required.")
-	httpAddr  = flag.String("http_addr", "localhost:8080", "Plain HTTP address to listen on ('host:port', or ':port'). Empty means no HTTP.")
-	hostHTTP  = flag.String("http_host", "", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -http_addr.")
-	hostHTTPS = flag.String("https_host", "", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -https_addr.")
+	httpsAddr = flag.String("https_addr", "0.0.0.0:4430", "TLS address to listen on ('host:port' or ':port'). Required.")
+	httpAddr  = flag.String("http_addr", "0.0.0.0:8080", "Plain HTTP address to listen on ('host:port', or ':port'). Empty means no HTTP.")
+	hostHTTP  = flag.String("http_host", "0.0.0.0:4430", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -http_addr.")
+	hostHTTPS = flag.String("https_host", "0.0.0.0:4430", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -https_addr.")
 	certs, err = tls.LoadX509KeyPair("server.crt", "server.key")
-	ausfRoot  = flag.String("ausfRoot", "ausf.default.svc.cluster.local", "address/domain of AUSF")
-	udmRoot   = flag.String("udmRoot" ,  "udm.default.svc.cluster.local", "address/domain of UDM")
-	udrRoot   = flag.String("udrRoot" ,  "udr.default.svc.cluster.local", "address/domain of UDR")
-	pcfRoot   = flag.String("pcfRoot" ,  "pcf.default.svc.cluster.local", "address/domain of PCF")
+	ausfRoot  = flag.String("ausfRoot", "ausf.default.svc.cluster.local:4430", "address/domain of AUSF")
+	udmRoot   = flag.String("udmRoot" ,  "udm.default.svc.cluster.local:4430", "address/domain of UDM")
+	udrRoot   = flag.String("udrRoot" ,  "udr.default.svc.cluster.local:4430", "address/domain of UDR")
+	pcfRoot   = flag.String("pcfRoot" ,  "pcf.default.svc.cluster.local:4430", "address/domain of PCF")
 )
 
 func main() {
@@ -173,6 +173,7 @@ func registerHandlers() {
 }
 
 func amfstart(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("received start signal")
 	// receive start signal, not representative for a UE, as not measured here
 	// setup for all connections
 	var root = "https://" + *httpsAddr
