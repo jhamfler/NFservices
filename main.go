@@ -30,6 +30,7 @@ var (
 	hostHTTP  = flag.String("http_host", "0.0.0.0:4430", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -http_addr.")
 	hostHTTPS = flag.String("https_host", "0.0.0.0:4430", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -https_addr.")
 	certs, err = tls.LoadX509KeyPair("server.crt", "server.key")
+	amfRoot   = flag.String("amfRoot" ,  "amf.default.svc.cluster.local:4430", "address/domain of AMF")
 	ausfRoot  = flag.String("ausfRoot", "ausf.default.svc.cluster.local:4430", "address/domain of AUSF")
 	udmRoot   = flag.String("udmRoot" ,  "udm.default.svc.cluster.local:4430", "address/domain of UDM")
 	udrRoot   = flag.String("udrRoot" ,  "udr.default.svc.cluster.local:4430", "address/domain of UDR")
@@ -176,8 +177,8 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("received start signal")
 	// receive start signal, not representative for a UE, as not measured here
 	// setup for all connections
-	var root = "https://" + *httpsAddr
-	var amfroot = root
+	//var root = "https://" + *httpsAddr // amf
+	var amfroot = "https://" + *amfRoot
 	var ausfroot = "https://" + *ausfRoot
 	var udmroot = "https://" + *udmRoot
 	var pcfroot = "https://" + *pcfRoot
