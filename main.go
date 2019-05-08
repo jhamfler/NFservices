@@ -178,10 +178,10 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	// receive start signal, not representative for a UE, as not measured here
 	// setup for all connections
 	//var root = "https://" + *httpsAddr // amf
-	var amfroot = "https://" + *amfRoot
+	var  amfroot = "https://" +  *amfRoot
 	var ausfroot = "https://" + *ausfRoot
-	var udmroot = "https://" + *udmRoot
-	var pcfroot = "https://" + *pcfRoot
+	var  udmroot = "https://" +  *udmRoot
+	var  pcfroot = "https://" +  *pcfRoot
 	var ausf1 = ausfroot + "/nausf-auth/v1/ue-authentications" // 8
 	var ausf2 = ausfroot + "/nausf-auth/v1/ue-authentications/authctxid0123456789/eap-session" // 21
 	var udm1  =  udmroot + "/nudm-ueau/v1/imsi-012345678901234/registrations/amf-3gpp-access" // 29
@@ -301,6 +301,7 @@ func Npcf_UEPolicyControl_UpdateNotify(w http.ResponseWriter, r *http.Request) {
 	// 200 by default
 	// last message, log success here
 }
+
 func Npcf_UEPolicyControl_Create(w http.ResponseWriter, r *http.Request) {
 	var pcfroot = "https://" + *httpsAddr
 	// receive from amf
