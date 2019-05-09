@@ -560,7 +560,7 @@ func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http
 	// receiving POST auth authentication info
 	// {supiOrSuci:"",servingNetworkName:""}
 	//var ausfroot = "https://" + *httpsAddr
-	var ausfroot = "https://" + *ausfRoot
+	var udmroot = "https://" + *udmRoot
 	var authctxid = "123456789"
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
@@ -581,7 +581,7 @@ func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http
 		if a.Network != "" && a.Suci != "" {
 			fmt.Printf("%s , %s\n", a.Network, a.Suci)
 			//var target = "https://127.0.0.1:4430/nudm-ueau/v1/" + a.Suci + "/security-information/generate-auth-data"
-			var target = ausfroot + "/nudm-ueau/v1/" + a.Suci + "/security-information/generate-auth-data"
+			var target = udmroot + "/nudm-ueau/v1/" + a.Suci + "/security-information/generate-auth-data"
 
 			// call UDM with SUCI, SN-name
 			//certs, err := tls.LoadX509KeyPair("server.crt", "server.key")
