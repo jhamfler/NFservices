@@ -38,9 +38,6 @@ var (
 )
 
 func main() {
-	//certs, err := tls.LoadX509KeyPair("server.crt", "server.key")
-	//if err != nil {fmt.Printf("error %v\n", err) }
-
 	var srv http.Server
 	flag.BoolVar(&http2.VerboseLogs, "verbose", false, "Verbose HTTP/2 debugging.")
 	flag.Parse()
@@ -106,14 +103,10 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerHandlers() {
-	//tiles := newGopherTilesHandler()
 	push := newPushHandler()
 	mux := http.NewServeMux()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case r.URL.Path == "/gophertiles":
-			//tiles.ServeHTTP(w, r) // allow HTTP/2 + HTTP/1.x
-			return
 		case strings.HasPrefix(r.URL.Path, "/serverpush"):
 			push.ServeHTTP(w, r) // allow HTTP/2 + HTTP/1.x
 			return
@@ -177,7 +170,6 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("received start signal")
 	// receive start signal, not representative for a UE, as not measured here
 	// setup for all connections
-	//var root = "https://" + *httpsAddr // amf
 	var  amfroot = "https://" +  *amfRoot
 	var ausfroot = "https://" + *ausfRoot
 	var  udmroot = "https://" +  *udmRoot
@@ -198,8 +190,8 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 	c := &http.Client{	Transport: t,	}
+	// begin procedure
 	{
-		// begin procedure
 		// call AUSF 1
 		request, _ := http.NewRequest("POST", ausf1, strings.NewReader(`{"servingNetworkName":"5G:mnc000.mcc000.3gppnetwork.org", "supiOrSuci":"suci-0-262-01-1111-0-0-0000000000"}`))
 		request.Header.Set("Content-Type", "application/json")
@@ -209,7 +201,7 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 		//defer resp.Body.Close()
 		content, _ := ioutil.ReadAll(resp.Body)
 		fmt.Printf("body length:%d\n", len(content))
-		fmt.Println(string(content))
+		//fmt.Println(string(content))
 		resp.Body.Close()
 	}
 	{
@@ -293,6 +285,7 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("body length:%d\n", len(content))
 		resp.Body.Close()
 	}
+	fmt.Printf("sending response")
 	// registration procedure is over
 }
 
