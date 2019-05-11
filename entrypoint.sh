@@ -33,4 +33,4 @@ env
 cd /usr/local/bin/
 echo $(pwd)
 #./NFservices --https_addr "$NFIP"":4430"
-./NFservices
+prlimit --nofile=90000 ./NFservices
