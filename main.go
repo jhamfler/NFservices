@@ -285,7 +285,7 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("body length:%d\n", len(content))
 		resp.Body.Close()
 	}
-	fmt.Printf("sending response")
+	fmt.Printf("sending response\n")
 	// registration procedure is over
 }
 
