@@ -197,12 +197,13 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := c.Do(request)
 		// receive
-		if err != nil { fmt.Printf("request error: %v\n",err)	}
-		//defer resp.Body.Close()
-		content, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("body length:%d\n", len(content))
-		//fmt.Println(string(content))
-		resp.Body.Close()
+		if err != nil {
+			fmt.Printf("request error: %v\n",err)
+		} else {
+			content, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("body length:%d\n", len(content))
+			resp.Body.Close()
+		}
 	}
 	{
 		// call AUSF 2
@@ -210,11 +211,13 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := c.Do(request)
 		// receive
-		if err != nil { fmt.Printf("request error: %v\n",err)	}
-		//defer resp.Body.Close()
-		content, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("body length:%d\n", len(content))
-		resp.Body.Close()
+		if err != nil {
+			fmt.Printf("request error: %v\n",err)
+		} else {
+			content, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("body length:%d\n", len(content))
+			resp.Body.Close()
+		}
 	}
 	{
 		// call UDM 1
@@ -222,44 +225,52 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := c.Do(request)
 		// receive
-		if err != nil { fmt.Printf("request error: %v\n",err)	}
-		//defer resp.Body.Close()
-		content, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("body length:%d\n", len(content))
-		resp.Body.Close()
+		if err != nil {
+			fmt.Printf("request error: %v\n",err)
+		}	else {
+			content, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("body length:%d\n", len(content))
+			resp.Body.Close()
+		}
 	}
 	{
 		// call UDM 2
 		request, _ := http.NewRequest("GET", udm2, nil)
 		resp, err := c.Do(request)
 		// receive
-		if err != nil { fmt.Printf("request error: %v\n",err)	}
-		//defer resp.Body.Close()
-		content, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("body length:%d\n", len(content))
-		resp.Body.Close()
+		if err != nil {
+			fmt.Printf("request error: %v\n",err)
+		} else {
+			content, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("body length:%d\n", len(content))
+			resp.Body.Close()
+		}
 	}
 	{
 		// call UDM 3
 		request, _ := http.NewRequest("GET", udm3, nil)
 		resp, err := c.Do(request)
 		// receive
-		if err != nil { fmt.Printf("request error: %v\n",err)	}
-		//defer resp.Body.Close()
-		content, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("body length:%d\n", len(content))
-		resp.Body.Close()
+		if err != nil {
+			fmt.Printf("request error: %v\n",err)
+		} else {
+			content, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("body length:%d\n", len(content))
+			resp.Body.Close()
+		}
 	}
 	{
 		// call UDM 4
 		request, _ := http.NewRequest("GET", udm4, nil)
 		resp, err := c.Do(request)
 		// receive
-		if err != nil { fmt.Printf("request error: %v\n",err)	}
-		//defer resp.Body.Close()
-		content, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("body length:%d\n", len(content))
-		resp.Body.Close()
+		if err != nil {
+			fmt.Printf("request error: %v\n",err)
+		} else {
+			content, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("body length:%d\n", len(content))
+			resp.Body.Close()
+		}
 	}
 	{
 		// call UDM 5
@@ -267,11 +278,13 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := c.Do(request)
 		// receive
-		if err != nil { fmt.Printf("request error: %v\n",err)	}
-		//defer resp.Body.Close()
-		content, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("body length:%d\n", len(content))
-		resp.Body.Close()
+		if err != nil {
+			fmt.Printf("request error: %v\n",err)
+		} else {
+			content, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("body length:%d\n", len(content))
+			resp.Body.Close()
+		}
 	}
 	{
 		// call PCF 1
@@ -298,7 +311,7 @@ func Npcf_UEPolicyControl_UpdateNotify(w http.ResponseWriter, r *http.Request) {
 }
 
 func Npcf_UEPolicyControl_Create(w http.ResponseWriter, r *http.Request) {
-	var pcfroot = "https://" + *httpsAddr
+	var pcfroot = "https://" + *pcfRoot
 	// receive from amf
 	fmt.Println(r.URL)
 	if r.Method == "POST" {
@@ -365,6 +378,7 @@ func Npcf_UEPolicyControl_Create(w http.ResponseWriter, r *http.Request) {
 
 func Nudr_SubscriptionData(w http.ResponseWriter, r *http.Request) {
 	// receive from udm
+	fmt.Print("received from udm ")
 	fmt.Println(r.URL)
 	{
 		re, _ := regexp.Compile("/nudr-dr/v2/subscription-data/(.*)/provisioned-data/am-data")
@@ -400,8 +414,8 @@ func Nudr_SubscriptionData(w http.ResponseWriter, r *http.Request) {
 }
 
 func Nudm_SDM_Get(w http.ResponseWriter, r *http.Request) {
-	var udrroot = "https://" + *httpsAddr
-	var udmroot = "https://" + *httpsAddr
+	var udrroot = "https://" + *udrRoot
+	var udmroot = "https://" + *udmRoot
 	{
 		re, _ := regexp.Compile("/nudm-sdm/v2/(.*)/am-data")
 		values := re.FindStringSubmatch(r.URL.Path)
@@ -453,6 +467,7 @@ func Nudm_SDM_Get(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(resstring)
 
 			w.Header().Set("Content-Type", "application/json")
+			return
 		}
 	}
 	{
@@ -484,6 +499,7 @@ func Nudm_SDM_Get(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(resstring)
 
 			w.Header().Set("Content-Type", "application/json")
+			return
 		}
 	}
 	{
@@ -518,6 +534,7 @@ func Nudm_SDM_Get(w http.ResponseWriter, r *http.Request) {
 			// no required headers
 			// response was empty
 			w.Header().Set("Content-Type", "application/json")
+			return
 		}
 	}
 	{
@@ -531,12 +548,14 @@ func Nudm_SDM_Get(w http.ResponseWriter, r *http.Request) {
 			buf := new(bytes.Buffer)
 			buf.ReadFrom(r.Body)
 			io.WriteString(w,buf.String())
+			return
 		}
 	}
+	fmt.Println("no endpoint")
 }
 
 func Nudm_UECM_Registration(w http.ResponseWriter, r *http.Request) {
-	var udmroot = *httpsAddr
+	var udmroot = *udmRoot
 	// nudm-uecm
 	re, _ := regexp.Compile("/nudm-uecm/v1/(.*)/registrations/amf-3gpp-access")
 	values := re.FindStringSubmatch(r.URL.Path)
@@ -548,7 +567,7 @@ func Nudm_UECM_Registration(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated) // 201 setting order matters
 		w.Header().Set("Location", udmroot + r.URL.String())
 	}
-
+	fmt.Printf("sending response\n")
 }
 
 func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http.Request) {
