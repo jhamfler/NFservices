@@ -43,8 +43,8 @@ func main() {
 	flag.Parse()
 	srv.Addr = *httpsAddr
 	srv.ConnState = idleTimeoutHook()
-	srv.ReadTimeout  = 5 * time.Second
-	srv.WriteTimeout = 5 * time.Second
+	srv.ReadTimeout  = 20 * time.Second
+	srv.WriteTimeout = 20 * time.Second
 	registerHandlers()
 	if *prod {
 		*hostHTTP = "server.default.svc.cluster.local"
@@ -279,11 +279,13 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 		request.Header.Set("Content-Type", "application/json")
 		resp, err := c.Do(request)
 		// receive
-		if err != nil { fmt.Printf("request error: %v\n",err)	}
-		//defer resp.Body.Close()
-		content, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("body length:%d\n", len(content))
-		resp.Body.Close()
+		if err != nil {
+			fmt.Printf("request error: %v\n",err)
+		}	else {
+			content, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("body length:%d\n", len(content))
+			resp.Body.Close()
+		}
 	}
 	fmt.Printf("sending response\n")
 	// registration procedure is over
@@ -569,6 +571,7 @@ func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http
 		if err := dec.Decode(&a); err == io.EOF {
 			break
 		} else if err != nil {
+			log.Fatal("decoding failed")
 			log.Fatal(err)
 		}
 		if a.Network != "" && a.Suci != "" {
@@ -579,7 +582,7 @@ func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http
 
 			// call UDM with SUCI, SN-name
 			//certs, err := tls.LoadX509KeyPair("server.crt", "server.key")
-			if err != nil {fmt.Printf("error %v\n", err) }
+			//if err != nil {fmt.Printf("error %v\n", err) }
 			t := &http2.Transport{
 				TLSClientConfig: &tls.Config{
 					Certificates: []tls.Certificate{certs},
@@ -601,7 +604,6 @@ func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http
 			resstring := string(content)
 			fmt.Println(resstring)
 
-
 			// send response to amf
 			w.Header().Set("Content-Type", "application/3gppHal+json")
 			w.WriteHeader(http.StatusCreated) // 201 setting order matters
@@ -609,6 +611,7 @@ func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http
 			// ue auth ctx
 			// 5g auth data base64(eappacket)
 			io.WriteString(w,"{'authType': 'EAP_AKA_PRIME','5gAuthData': 'MDAwMDExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEx', '_links':'" + ausfroot + "/nausf-auth/v1/ue-authentications/" + authctxid +  "/eap-session" + "'}")
+			fmt.Printf("sending response to amf\n")
 		}
 	}}
 
@@ -795,78 +798,78 @@ func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http
 		})
 	}
 
-func httpsHost() string {
-	if *hostHTTPS != "" {
-		return *hostHTTPS
-	}
-	if v := *httpsAddr; strings.HasPrefix(v, ":") {
-		return "localhost" + v
-	} else {
-		return v
-	}
-}
-
-func http1Prefix() string {
-	if *prod {
-		return "https://http1.golang.org"
-	}
-	return "http://" + httpHost()
-}
-
-func httpHost() string {
-	if *hostHTTP != "" {
-		return *hostHTTP
-	}
-	if v := *httpAddr; strings.HasPrefix(v, ":") {
-		return "localhost" + v
-	} else {
-		return v
-	}
-}
-
-type tcpKeepAliveListener struct {
-	*net.TCPListener
-}
-
-func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
-	tc, err := ln.AcceptTCP()
-	if err != nil {
-		return
-	}
-	tc.SetKeepAlive(true)
-	tc.SetKeepAlivePeriod(3 * time.Minute)
-	return tc, nil
-}
-
-func serveProd() {
-	log.Printf("running in production mode.")
-}
-
-const idleTimeout = 5 * time.Minute
-const activeTimeout = 10 * time.Minute
-
-func idleTimeoutHook() func(net.Conn, http.ConnState) {
-	var mu sync.Mutex
-	m := map[net.Conn]*time.Timer{}
-	return func(c net.Conn, cs http.ConnState) {
-		mu.Lock()
-		defer mu.Unlock()
-		if t, ok := m[c]; ok {
-			delete(m, c)
-			t.Stop()
+	func httpsHost() string {
+		if *hostHTTPS != "" {
+			return *hostHTTPS
 		}
-		var d time.Duration
-		switch cs {
-		case http.StateNew, http.StateIdle:
-			d = idleTimeout
-		case http.StateActive:
-			d = activeTimeout
-		default:
+		if v := *httpsAddr; strings.HasPrefix(v, ":") {
+			return "localhost" + v
+		} else {
+			return v
+		}
+	}
+
+	func http1Prefix() string {
+		if *prod {
+			return "https://http1.golang.org"
+		}
+		return "http://" + httpHost()
+	}
+
+	func httpHost() string {
+		if *hostHTTP != "" {
+			return *hostHTTP
+		}
+		if v := *httpAddr; strings.HasPrefix(v, ":") {
+			return "localhost" + v
+		} else {
+			return v
+		}
+	}
+
+	type tcpKeepAliveListener struct {
+		*net.TCPListener
+	}
+
+	func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
+		tc, err := ln.AcceptTCP()
+		if err != nil {
 			return
 		}
-		m[c] = time.AfterFunc(d, func() {
-			log.Printf("closing idle conn %v after %v", c.RemoteAddr(), d)
-			go c.Close()
-		})
+		tc.SetKeepAlive(true)
+		tc.SetKeepAlivePeriod(3 * time.Minute)
+		return tc, nil
 	}
-}
+
+	func serveProd() {
+		log.Printf("running in production mode.")
+	}
+
+	const idleTimeout = 5 * time.Minute
+	const activeTimeout = 10 * time.Minute
+
+	func idleTimeoutHook() func(net.Conn, http.ConnState) {
+		var mu sync.Mutex
+		m := map[net.Conn]*time.Timer{}
+		return func(c net.Conn, cs http.ConnState) {
+			mu.Lock()
+			defer mu.Unlock()
+			if t, ok := m[c]; ok {
+				delete(m, c)
+				t.Stop()
+			}
+			var d time.Duration
+			switch cs {
+			case http.StateNew, http.StateIdle:
+				d = idleTimeout
+			case http.StateActive:
+				d = activeTimeout
+			default:
+				return
+			}
+			m[c] = time.AfterFunc(d, func() {
+				log.Printf("closing idle conn %v after %v", c.RemoteAddr(), d)
+				go c.Close()
+			})
+		}
+	}
