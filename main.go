@@ -43,8 +43,8 @@ func main() {
 	flag.Parse()
 	srv.Addr = *httpsAddr
 	srv.ConnState = idleTimeoutHook()
-	srv.ReadTimeout  = 20 * time.Second
-	srv.WriteTimeout = 20 * time.Second
+	srv.ReadTimeout  = 10 * time.Second
+	srv.WriteTimeout = 10 * time.Second
 	registerHandlers()
 	if *prod {
 		*hostHTTP = "server.default.svc.cluster.local"
