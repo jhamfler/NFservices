@@ -302,7 +302,8 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("sending response\n")
 	// registration procedure is over
-	t.CloseIdleConnections() // c.CloseIdleConnections()
+	c.CloseIdleConnections()
+	t.CloseIdleConnections()
 }
 
 func Npcf_UEPolicyControl_UpdateNotify(w http.ResponseWriter, r *http.Request) {
@@ -372,6 +373,8 @@ func Npcf_UEPolicyControl_Create(w http.ResponseWriter, r *http.Request) {
 				if resp.StatusCode == 204 {
 					fmt.Println("success chain")
 				}
+
+				c.CloseIdleConnections()
 				t.CloseIdleConnections()
 			}
 		}
@@ -469,6 +472,8 @@ func Nudm_SDM_Get(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(resstring)
 
 			w.Header().Set("Content-Type", "application/json")
+
+			c.CloseIdleConnections()
 			t.CloseIdleConnections()
 			return
 		}
@@ -502,6 +507,8 @@ func Nudm_SDM_Get(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(resstring)
 
 			w.Header().Set("Content-Type", "application/json")
+
+			c.CloseIdleConnections()
 			t.CloseIdleConnections()
 			return
 		}
@@ -538,6 +545,8 @@ func Nudm_SDM_Get(w http.ResponseWriter, r *http.Request) {
 			// no required headers
 			// response was empty
 			w.Header().Set("Content-Type", "application/json")
+
+			c.CloseIdleConnections()
 			t.CloseIdleConnections()
 			return
 		}
@@ -636,6 +645,8 @@ func Nausf_UEAuthentication_Authenticate_Request1(w http.ResponseWriter, r *http
 			// 5g auth data base64(eappacket)
 			io.WriteString(w,"{'authType': 'EAP_AKA_PRIME','5gAuthData': 'MDAwMDExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEx', '_links':'" + ausfroot + "/nausf-auth/v1/ue-authentications/" + authctxid +  "/eap-session" + "'}")
 			fmt.Printf("sending response to amf\n")
+
+			c.CloseIdleConnections()
 			t.CloseIdleConnections()
 		}
 	}}
