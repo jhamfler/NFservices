@@ -302,7 +302,7 @@ func amfstart(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("sending response\n")
 	// registration procedure is over
-	t.CloseIdleConnections()
+	t.CloseIdleConnections() // c.CloseIdleConnections()
 }
 
 func Npcf_UEPolicyControl_UpdateNotify(w http.ResponseWriter, r *http.Request) {
