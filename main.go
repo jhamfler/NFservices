@@ -433,7 +433,7 @@ func Nudm_SDM_Get(w http.ResponseWriter, r *http.Request) {
 					InsecureSkipVerify: true,
 				},
 			}
-			c := &http.Client{	Transport: t,	Timeout: time.Second * 5 }
+			c := &http.Client{	Transport: t,	}//Timeout: time.Second * 5 }
 			r, err := http.NewRequest("GET", target, nil)
 			if err != nil {
 				fmt.Println("error gen request: " + err.Error())
